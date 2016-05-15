@@ -1,7 +1,7 @@
 <?php
 function shadowsockslibev_ConfigOptions()
 {
-    $configarray = array(
+    $configarray = array(   //后台看到的插件设置选项
         "用户数据库" => array("Type" => "text", "Size" => "32"),
         "用户表" => array("Type" => "text", "Size" => "32"),
         "用户组" => array("Type" => "text", "Size" => "32"),
@@ -13,7 +13,7 @@ function shadowsockslibev_ConfigOptions()
     return $configarray;
 }
 
-function shadowsockslibev_CreateNewPort($params)
+function shadowsockslibev_CreateNewPort($params)    //获得已有的最大的端口的值
 {
     $userdatabase = $params['configoption1'];
     $usertable = $params['configoption2'];
@@ -87,24 +87,6 @@ function shadowsockslibev_CreateAccount($params)
     return $result;
 }
 
-function shadowsockslibev_TerminateAccount($params)
-{
-    $userdatabase = $params['configoption1'];
-    $usertable = $params['configoption2'];
-    $mysql = mysql_connect($params['serverip'], $params['serverusername'], $params['serverpassword']);
-    if (!$mysql) {
-        $result = "Can not connect to MySQL Server" . mysql_error();
-    } else {
-        mysql_select_db($userdatabase, $mysql);
-        if (mysql_query("DELETE FROM " . $usertable . " WHERE pid='" . $params['serviceid'] . "'", $mysql)) {
-            $result = 'success';
-        } else {
-            $result = 'Error. Cloud not Terminate this Account.' . mysql_error();
-        }
-    }
-    return $result;
-}
-
 function shadowsockslibev_SuspendAccount($params)
 {
     $userdatabase = $params['configoption1'];
@@ -153,6 +135,26 @@ function shadowsockslibev_UnSuspendAccount($params)
     return $result;
 }
 
+function shadowsockslibev_TerminateAccount($params)
+{
+    $userdatabase = $params['configoption1'];
+    $usertable = $params['configoption2'];
+    $mysql = mysql_connect($params['serverip'], $params['serverusername'], $params['serverpassword']);
+    if (!$mysql) {
+        $result = "Can not connect to MySQL Server" . mysql_error();
+    } else {
+        mysql_select_db($userdatabase, $mysql);
+        if (mysql_query("DELETE FROM " . $usertable . " WHERE pid='" . $params['serviceid'] . "'", $mysql)) {
+            $result = 'success';
+        } else {
+            $result = 'Error. Cloud not Terminate this Account.' . mysql_error();
+        }
+    }
+    return $result;
+}
+
+//TODO funciton Renew
+
 function shadowsockslibev_ChangePassword($params)
 {
     $userdatabase = $params['configoption1'];
@@ -186,6 +188,8 @@ function shadowsockslibev_ChangePassword($params)
     }
     return $result;
 }
+
+//TODO function ChangePackage
 
 function shadowsockslibev_ClientArea($params)
 {
@@ -222,9 +226,6 @@ function shadowsockslibev_ClientArea($params)
     $html = "
         <div style=\"text-align:center;\">
             <strong><span style=\"font-size:18px;\">连接信息</span></strong>
-            <p>
-                <a href=\"/ss_change_setting.php?id=" . $params['serviceid'] . "\">修改</a>
-            </p>
             <table style=\"width:100%;\" cellpadding=\"2\" cellspacing=\"0\" align=\"center\" border=\"0\" bordercolor=\"#000000\" class=\"ke-zeroborder\">
                 <tbody>
                     <tr>
@@ -350,5 +351,46 @@ function shadowsockslibev_ClientArea($params)
     return $html;
 }
 
-?>
+//TODO function AdminArea
 
+//TODO funciton LoginLink
+
+//TODO function ClientAreaCustomButtonArray
+
+//TODO function ClientAreaAllowedFunctions
+
+//TODO function AdminCustomButtonArray
+
+//TODO function UsageUpdate
+
+function shadowsockslibev_AdminServicesTabFields($params)
+{
+    $userdatabase = $params['configoption1'];
+    $usertable = $params['configoption2'];
+    $serviceid = $params['serviceid'];
+
+    $mysql = mysql_connect($params['serverip'], $params['serverusername'], $params['serverpassword']);
+    if (!$mysql)
+        return array('status' => 'Cannot connect to mysql');
+    mysql_select_db($userdatabase, $mysql);
+    $query = mysql_query("SELECT * FROM `" . $usertable . "` WHERE `pid` = " . $serviceid, $mysql);
+    $result = mysql_fetch_array($query);
+    if (!$result)
+        return array('status' => 'Service not found');
+
+    $fieldsarray = array(
+        'id' => $result['id'],
+        'port' => $result['port'],
+        'passwd' => $result['passwd'],
+        'encrypt_method' => $result['encrypt_method'],
+        'udp_relay' => $result['udp_relay'],
+        'fast_open' => $result['fast_open'],
+        'group' => $result['group'],
+        'enable' => $result['enable'],
+        'serviceid' => $result['pid'],
+    );
+
+    return $fieldsarray;
+}
+
+//TODO AdminServicesTabFieldsSave

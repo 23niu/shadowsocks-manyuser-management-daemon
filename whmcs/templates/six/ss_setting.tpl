@@ -1,4 +1,3 @@
-页面测试中，有bug请报告<br><br>
 <strong>若您不具备相关专业知识，请不要修改以下设置</strong><br>
 <form action="/ss_change_setting.php?id={$hostingid}" method="post">
     <p>
