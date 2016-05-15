@@ -6,13 +6,14 @@ while [[ true ]]; do
     #访问mysql
     printf "[`date`]\n" #输出当前时间
     mysql_command="
-        SELECT \`${column_port}\` ,\`${column_password}\` ,\`${column_encrypt_method}\` ,\`${column_udp_relay}\`
+        SELECT \`${column_port}\` ,\`${column_password}\` ,\`${column_encrypt_method}\`
             FROM \`${mysql_table}\`
         WHERE \`${column_group}\` = '${server_group}'
             AND \`${column_enable}\` = 1
         ORDER BY \`${column_port}\`"    #构造查询语句
     ${mysql_mysqlexe} -h ${mysql_host} -P ${mysql_port} -u ${mysql_user} -p${mysql_password} -D ${mysql_database} -e "${mysql_command}" -N > ${mysql_temp_file} #进行查询并输出到文件
     if [[ ! -s ${mysql_temp_file} ]]; then  #查询暂存文件为空
+        printf "查询暂存文件为空"
         sleep ${mysql_refresh_time}
         continue
     fi
@@ -22,8 +23,7 @@ while [[ true ]]; do
         #ss-server -s 0.0.0.0 -p 8989 -k 1234 -m aes-256-cfb
         ss_command="`echo ${line} |
         awk -v ss_ssexe=${ss_ssexe} -v server_bind_ip=${server_bind_ip} '{
-        printf("%s -s %s -p %s -k %s -m %s",ss_ssexe,server_bind_ip,$1,$2,$3)
-        if($4==1) printf(" -u")
+        printf("%s -s %s -p %s -k %s -m %s -u",ss_ssexe,server_bind_ip,$1,$2,$3)
         }'`"
         ss_command_result=`ps -ef | grep "${ss_command}" | grep -v ps | grep -v grep | sort`
         ss_port=`echo ${line} | awk '{print $1}'`

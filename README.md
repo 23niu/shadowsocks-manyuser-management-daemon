@@ -15,6 +15,7 @@
 ```bash
 sudo apt-get install git make gcc g++ build-essential autoconf libtool libssl-dev unzip
 git clone https://github.com/czp3009/shadowsocks-manyuser-management-daemon.git
+cd shadowsocks-manyuser-management-daemon
 unzip shadowsocks-libev-2.4.6.zip
 cd shadowsocks-libev-2.4.6
 ./configure
